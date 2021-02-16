@@ -10,14 +10,14 @@
         Liczba słów (1-400):
         <input type="text" v-model="numberOfWords" class="text-field number">
       </label>
-      <button @click="generate">Generuj</button>
+      <button @click="generate" class="pointer">Generuj</button>
 
       <h2 style="margin-top: 50px">Zapisane łańcuchy</h2>
       <div v-for="(chain, i) in myChains" :key="i" class="saved-chains-item">
-        <span @click="() => showChain(chain.name)" style="margin-right: 20px;">{{
+        <span @click="() => showChain(chain.name)" style="margin-right: 20px;" class="pointer">{{
             chain.name
           }} ({{ chain.chain.length }})</span>
-        <span @click="() => removeChain(chain.name)">[usuń]</span>
+        <span @click="() => removeChain(chain.name)" class="pointer">[usuń]</span>
       </div>
     </div>
 
@@ -49,12 +49,12 @@ export default {
   },
   created() {
     this.words = [
-      ...words.anatomy,
-      ...words.characterTraits,
-      ...words.emotions,
-      ...words.homonimy,
+      // ...words.anatomy,
+      // ...words.characterTraits,
+      // ...words.emotions,
+      // ...words.homonimy,
       ...words.colors,
-      ...words.cities,
+      // ...words.cities,
       ...words.places,
       ...words.fruits,
       ...words.vegetables,
@@ -102,10 +102,11 @@ export default {
       if (storedChains) {
         storedChains.unshift(chainObj)
         localStorage.setItem('myChains', JSON.stringify(storedChains))
+        this.myChains = storedChains;
       } else {
         localStorage.setItem('myChains', JSON.stringify([chainObj]))
+        this.myChains = [chainObj];
       }
-      this.myChains = storedChains;
       this.viewType = 'chain';
     },
     showChain(chainName) {
@@ -117,7 +118,6 @@ export default {
       this.viewType = 'chain'
     },
     removeChain(chainName) {
-      console.log(chainName)
       const updatedMyChains = this.myChains.filter((chain) => {
         return chain.name !== chainName
       })
@@ -137,6 +137,8 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   text-align: center;
   color: #2c3e50;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 label {
@@ -148,6 +150,7 @@ label {
   border: 0;
   border-bottom: solid 1px #d2d2d2;
   width: 100%;
+  max-width: 500px;
   text-align: center;
   height: 30px;
   font: inherit;
@@ -175,7 +178,17 @@ hr {
   margin: 30px 0;
 }
 
-.saved-chains-item {
+.saved-chains-item span {
+  display: inline-block;
   padding: 10px;
+  cursor: pointer;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.pointer:hover {
+  filter: drop-shadow(0px 0px 1px lightgrey);
 }
 </style>

@@ -1,20 +1,20 @@
 <template>
   <div style="margin-bottom: 100px">
 
-    <div @click="$emit('back')" class="back-btn">&lt; wróć</div>
+    <div @click="$emit('back')" class="back-btn pointer">&lt; wróć</div>
     <h2>{{ name }}</h2>
 
     <div v-if="viewType === 'single'" class="container chain-element-container">
       <div class="chain-element">
         {{ currentElement.toUpperCase() }}
       </div>
-      <div class="next-button" @click="nextElement">
+      <div class="pointer" @click="nextElement">
         >
       </div>
     </div>
 
     <div v-else class="words-container">
-      <div v-for="(word, i) in chain" :key="i" class="list-element">
+      <div v-for="(word, i) in chain" :key="i" class="list-element pointer">
         <label>
           {{ i + 1 }}.
           <input type="checkbox" class="toggle" hidden/>
@@ -77,6 +77,7 @@ export default {
 label {
   margin: 0;
   padding: 10px;
+  cursor: pointer;
 }
 
 .toggle ~ .word {
@@ -100,4 +101,5 @@ label {
   text-align: left;
   margin-left: 50px;
 }
+
 </style>
