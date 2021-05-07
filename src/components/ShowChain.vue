@@ -1,9 +1,9 @@
 <template>
   <div style="margin-bottom: 100px">
-
-    <div @click="$emit('back')" class="back-btn pointer">&lt; wróć</div>
-    <h2>{{ name }}</h2>
-
+    <div class="top-bar">
+      <div @click="$emit('back')" class="back-btn pointer">&lt; wróć</div>
+      <h2>{{ name }}</h2>
+    </div>
     <div v-if="viewType === 'single'" class="container chain-element-container">
       <div class="chain-element">
         {{ currentElement.toUpperCase() }}
@@ -12,7 +12,6 @@
         >
       </div>
     </div>
-
     <div v-else class="words-container">
       <div v-for="(word, i) in chain" :key="i" class="list-element pointer">
         <label>
@@ -90,16 +89,27 @@ label {
 }
 
 .back-btn {
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  color: #0483e0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  color: #0075ff;
   padding: 20px;
 }
 
 .words-container {
   text-align: left;
-  margin-left: 50px;
+  margin: 80px 0 0 50px;
+}
+
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+  border-bottom: solid 1px #d2d2d2;
+  z-index: 2;
 }
 
 </style>

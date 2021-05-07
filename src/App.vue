@@ -2,10 +2,17 @@
   <div id="app">
     <div v-if="viewType === 'main'" style="margin-bottom: 60px">
       <h2>Generuj łańcuch</h2>
-      <label style="display: block">
-        Nazwa:<br>
-        <input type="text" v-model="chainName" class="text-field">
-      </label>
+      <div>
+        <label class="is-use-first-word">
+          <input type="checkbox" v-model="isFirstElAsName" class="text-field" style="width:40px">
+          Użyj pierwszego słowa jako nazwy
+        </label>
+        <div>~ albo ~</div>
+        <label>
+          Wpisz swoją nazwę:<br>
+          <input type="text" v-model="chainName" class="text-field" :disabled="isFirstElAsName">
+        </label>
+      </div>
       <label style="display: block">
         Liczba słów (1-400):
         <input type="text" v-model="numberOfWords" class="text-field number">
@@ -14,9 +21,9 @@
 
       <h2 style="margin-top: 50px">Zapisane łańcuchy</h2>
       <div v-for="(chain, i) in myChains" :key="i" class="saved-chains-item">
-        <span @click="() => showChain(chain.name)" style="margin-right: 20px;" class="pointer">{{
-            chain.name
-          }} ({{ chain.chain.length }})</span>
+        <span @click="() => showChain(chain.name)" style="margin-right: 20px;" class="pointer">
+          {{ chain.name }} ({{ chain.chain.length }})
+        </span>
         <span @click="() => removeChain(chain.name)" class="pointer">[usuń]</span>
       </div>
     </div>
@@ -39,8 +46,9 @@ export default {
   },
   data() {
     return {
-      numberOfWords: 4,
-      chainName: 'Łańcuch ',
+      numberOfWords: 20,
+      chainName: 'Mój łańcuch ',
+      isFirstElAsName: true,
       viewType: 'main', // main | chain
       words: [],
       generatedChain: [],
@@ -53,8 +61,8 @@ export default {
       // ...words.characterTraits,
       // ...words.emotions,
       // ...words.homonimy,
-      ...words.colors,
       // ...words.cities,
+      ...words.colors,
       ...words.places,
       ...words.fruits,
       ...words.vegetables,
@@ -74,16 +82,33 @@ export default {
         return;
       }
       const storedChains = JSON.parse(localStorage.getItem('myChains'));
-      if (storedChains) {
-        let isNameUnique = true;
-        storedChains.forEach((chain) => {
-          if (chain.name === this.chainName) isNameUnique = false;
-        })
-        if (!isNameUnique) {
-          alert('Taka nazwa już istnieje');
-          return;
+      const ifNameNotUniqueAddSuffix = (name) => {
+        const isUnique = (otherName) => {
+          let unique = true;
+          storedChains.forEach((chain) => {
+            if (chain.name === otherName) unique = false;
+          })
+          return unique
+        }
+        if (!storedChains || isUnique(name)) return name;
+
+        let newName = '';
+        const suffix = name.match(/\[(\d*)\]/);
+        const addedNum = suffix ? Number(suffix[1]) : null;
+        let nextNum = addedNum + 1;
+        if (suffix) newName = name.replace(/\[(\d*)\]/, `[${nextNum}]`)
+        else newName = `${name}[1]`;
+
+        if (isUnique(newName)) return newName;
+        else {
+          while (!isUnique(newName)) {
+            nextNum++;
+            newName = newName.replace(/\[(\d*)\]/, `[${nextNum}]`)
+          }
+          return newName;
         }
       }
+
       const getUniqueRandomIndex = (times) => {
         if (times > 0) {
           const randomIndex = Math.floor(Math.random() * (this.words.length));
@@ -95,6 +120,10 @@ export default {
         }
       }
       getUniqueRandomIndex(this.numberOfWords);
+
+      if (this.isFirstElAsName) this.chainName = this.generatedChain[0].toUpperCase()
+      this.chainName = ifNameNotUniqueAddSuffix(this.chainName);
+
       const chainObj = {
         name: this.chainName,
         chain: this.generatedChain,
@@ -127,6 +156,7 @@ export default {
     chandleBackButton() {
       this.viewType = 'main';
       this.generatedChain = [];
+      this.chainName = '';
     },
   },
 }
@@ -143,7 +173,7 @@ export default {
 
 label {
   display: block;
-  margin: 20px;
+  margin: 10px;
 }
 
 .text-field {
@@ -167,10 +197,11 @@ label {
 
 button {
   padding: 10px 50px;
-  background: antiquewhite;
-  border: solid 1px #c3b39e;
+  background: #0075ff;
+  border: solid 1px #0075ff;
   border-radius: 5px;
   font: inherit;
+  color: white;
 }
 
 hr {
@@ -186,9 +217,16 @@ hr {
 
 .pointer {
   cursor: pointer;
+
 }
 
 .pointer:hover {
   filter: drop-shadow(0px 0px 1px lightgrey);
+}
+
+.is-use-first-word {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
